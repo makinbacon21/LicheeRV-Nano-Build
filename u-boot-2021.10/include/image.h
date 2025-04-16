@@ -565,6 +565,7 @@ int boot_get_setup(bootm_headers_t *images, uint8_t arch, ulong *setup_start,
 #endif
 #define IMAGE_FORMAT_FIT	0x02	/* new, libfdt based format */
 #define IMAGE_FORMAT_ANDROID	0x03	/* Android boot image */
+#define IMAGE_FORMAT_LITE	0x04	/* Lite boot image */
 
 ulong genimg_get_kernel_addr_fit(char * const img_addr,
 			         const char **fit_uname_config,
@@ -1501,6 +1502,25 @@ ulong android_image_get_kcomp(const struct andr_img_hdr *hdr);
 void android_print_contents(const struct andr_img_hdr *hdr);
 #if !defined(CONFIG_SPL_BUILD)
 bool android_image_print_dtb_contents(ulong hdr_addr);
+#endif
+
+struct lite_img_hdr;
+int lite_image_check_header(const struct lite_img_hdr *hdr);
+int lite_image_get_kernel(const struct lite_img_hdr *hdr, int verify,
+			     ulong *os_data, ulong *os_len);
+int lite_image_get_ramdisk(const struct lite_img_hdr *hdr,
+			      ulong *rd_data, ulong *rd_len);
+int lite_image_get_second(const struct lite_img_hdr *hdr,
+			      ulong *second_data, ulong *second_len);
+bool lite_image_get_dtbo(ulong hdr_addr, ulong *addr, u32 *size);
+bool lite_image_get_dtb_by_index(ulong hdr_addr, u32 index, ulong *addr,
+				    u32 *size);
+ulong lite_image_get_end(const struct lite_img_hdr *hdr);
+ulong lite_image_get_kload(const struct lite_img_hdr *hdr);
+ulong lite_image_get_kcomp(const struct lite_img_hdr *hdr);
+void lite_print_contents(const struct lite_img_hdr *hdr);
+#if !defined(CONFIG_SPL_BUILD)
+bool lite_image_print_dtb_contents(ulong hdr_addr);
 #endif
 
 #endif /* CONFIG_ANDROID_BOOT_IMAGE */

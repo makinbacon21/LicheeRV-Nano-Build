@@ -1137,6 +1137,8 @@ int genimg_get_format(const void *img_addr)
 	if (android_image_check_header(img_addr) == 0)
 		return IMAGE_FORMAT_ANDROID;
 #endif
+	if (lite_image_check_header(img_addr) == 0)
+		return IMAGE_FORMAT_LITE;
 
 	return IMAGE_FORMAT_INVALID;
 }
@@ -1206,14 +1208,16 @@ int boot_get_ramdisk(int argc, char *const argv[], bootm_headers_t *images,
 	*rd_start = 0;
 	*rd_end = 0;
 
-#ifdef CONFIG_ANDROID_BOOT_IMAGE
 	/*
 	 * Look for an Android boot image.
 	 */
 	buf = map_sysmem(images->os.start, 0);
-	if (buf && genimg_get_format(buf) == IMAGE_FORMAT_ANDROID)
-		select = (argc == 0) ? env_get("loadaddr") : argv[0];
+	if (buf && (
+#ifdef CONFIG_ANDROID_BOOT_IMAGE
+		genimg_get_format(buf) == IMAGE_FORMAT_ANDROID ||
 #endif
+		genimg_get_format(buf) == IMAGE_FORMAT_LITE))
+		select = (argc == 0) ? env_get("loadaddr") : argv[0];
 
 	if (argc >= 2)
 		select = argv[1];
@@ -1320,6 +1324,10 @@ int boot_get_ramdisk(int argc, char *const argv[], bootm_headers_t *images,
 				&rd_data, &rd_len);
 			break;
 #endif
+		case IMAGE_FORMAT_LITE:
+			lite_image_get_ramdisk((void *)images->os.start,
+				&rd_data, &rd_len);
+			break;
 		default:
 #ifdef CONFIG_SUPPORT_RAW_INITRD
 			end = NULL;

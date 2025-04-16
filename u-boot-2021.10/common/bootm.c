@@ -169,6 +169,16 @@ static int bootm_find_os(struct cmd_tbl *cmdtp, int flag, int argc,
 		ep_found = true;
 		break;
 #endif
+	case IMAGE_FORMAT_LITE:
+		images.os.type = IH_TYPE_KERNEL;
+		images.os.comp = lite_image_get_kcomp(os_hdr);
+		images.os.os = IH_OS_LINUX;
+
+		images.os.end = lite_image_get_end(os_hdr);
+		images.os.load = lite_image_get_kload(os_hdr);
+		images.ep = images.os.load;
+		ep_found = true;
+		break;
 	default:
 		puts("ERROR: unknown image format type!\n");
 		return 1;
@@ -940,6 +950,12 @@ static const void *boot_get_kernel(struct cmd_tbl *cmdtp, int flag, int argc,
 			return NULL;
 		break;
 #endif
+	case IMAGE_FORMAT_LITE:
+		printf("## Booting Lite Image at 0x%08lx ...\n", img_addr);
+		if (lite_image_get_kernel(buf, images->verify,
+						os_data, os_len))
+			return NULL;
+		break;
 	default:
 		printf("Wrong Image Format for %s command\n", cmdtp->name);
 		bootstage_error(BOOTSTAGE_ID_FIT_KERNEL_INFO);

@@ -288,6 +288,11 @@ static int image_info(ulong addr)
 		unmap_sysmem(hdr);
 		return 0;
 #endif
+	case IMAGE_FORMAT_LITE:
+		puts("   Lite image found\n");
+		lite_print_contents(hdr);
+		unmap_sysmem(hdr);
+		return 0;
 #if defined(CONFIG_FIT)
 	case IMAGE_FORMAT_FIT:
 		puts("   FIT image found\n");
