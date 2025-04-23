@@ -268,10 +268,10 @@
 					"if test $? -ne 0; then " \
 					"  echo ITB decryption failed; " \
 					"else; " \
-					"  bootm ${uImage_addr}#config-" FDT_NO ";" \
+					"  bootm ${uImage_addr};" \
 					"fi;"
 	#else
-		#define UBOOT_VBOOT_BOOTM_COMMAND "bootm ${uImage_addr}#config-" FDT_NO ";"
+		#define UBOOT_VBOOT_BOOTM_COMMAND "bootm ${uImage_addr};"
 	#endif
 
 	/* BOOTLOGO */
@@ -296,7 +296,7 @@
 	#define SD_BOOTM_COMMAND \
 				SET_BOOTARGS \
 				"echo Boot from SD dev ${sddev} ...;" \
-				"mmc dev ${sddev} && fatload mmc ${sddev} ${uImage_addr} boot.sd;" \
+				"mmc dev ${sddev} && fatload mmc ${sddev} ${uImage_addr} boot.img;" \
 				"if test $? -eq 0; then " \
 					UBOOT_VBOOT_BOOTM_COMMAND \
 				"fi;"
@@ -305,7 +305,7 @@
 				"cvi_sd_boot;" \
 				SET_BOOTARGS \
 				"echo Boot from SD dev ${sddev} auto ...;" \
-				"mmc dev ${sddev} && fatload mmc ${sddev} ${uImage_addr} boot.sd;" \
+				"mmc dev ${sddev} && fatload mmc ${sddev} ${uImage_addr} boot.img;" \
 				"if test $? -eq 0; then " \
 					UBOOT_VBOOT_BOOTM_COMMAND \
 				"fi;"
