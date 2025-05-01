@@ -185,6 +185,54 @@ exit:
   return ret;
 }
 
+/**
+ * android_image_get_dtb_by_index() - Get address and size of blob in DTB area.
+ * @hdr_addr: Boot image header address
+ * @index: Index of desired DTB in DTB area (starting from 0)
+ * @addr: If not NULL, will contain address to specified DTB
+ * @size: If not NULL, will contain size of specified DTB
+ *
+ * Get the address and size of DTB blob by its index in DTB area of Lite
+ * Boot Image in RAM.
+ *
+ * Return: true on success or false on error.
+ */
+bool lite_image_get_dtb(ulong hdr_addr, ulong *addr,
+				    u32 *size)
+{
+	const struct lite_img_hdr *hdr;
+  const struct fdt_header *fdt;
+	bool res;
+	ulong dtb_img_addr;	/* address of DTB part in boot image */
+	u32 dtb_img_size;	/* size of DTB payload in boot image */
+  u32 dtb_size;
+
+	res = lite_image_get_dtb_img_addr(hdr_addr, &dtb_img_addr);
+	if (!res)
+		return false;
+
+	/* Find out the address of DTB with specified index in concat blobs */
+	hdr = map_sysmem(hdr_addr, sizeof(*hdr));
+	dtb_img_size = hdr->dtb_size;
+	unmap_sysmem(hdr);
+
+  fdt = map_sysmem(dtb_img_addr, sizeof(*fdt));
+  if (fdt_check_header(fdt) != 0) {
+    unmap_sysmem(fdt);
+    printf("Error: Invalid FDT header!\n");
+    return false;
+  }
+
+  dtb_size = fdt_totalsize(fdt);
+  unmap_sysmem(fdt);
+
+  if (size)
+    *size = dtb_size;
+  if (addr)
+    *addr = dtb_img_addr;
+  return true;
+}
+
 #if !defined(CONFIG_SPL_BUILD)
 /**
  * lite_print_contents - prints out the contents of the Lite format image

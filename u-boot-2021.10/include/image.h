@@ -1512,9 +1512,9 @@ int lite_image_get_ramdisk(const struct lite_img_hdr *hdr,
 			      ulong *rd_data, ulong *rd_len);
 int lite_image_get_second(const struct lite_img_hdr *hdr,
 			      ulong *second_data, ulong *second_len);
-bool lite_image_get_dtbo(ulong hdr_addr, ulong *addr, u32 *size);
 bool lite_image_get_dtb_by_index(ulong hdr_addr, u32 index, ulong *addr,
 				    u32 *size);
+bool lite_image_get_dtb(ulong hdr_addr, ulong *addr, u32 *size);
 ulong lite_image_get_end(const struct lite_img_hdr *hdr);
 ulong lite_image_get_kload(const struct lite_img_hdr *hdr);
 ulong lite_image_get_kcomp(const struct lite_img_hdr *hdr);

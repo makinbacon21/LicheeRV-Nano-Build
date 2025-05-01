@@ -507,6 +507,17 @@ int boot_get_fdt(int flag, int argc, char *const argv[], uint8_t arch,
 			debug("## Using FDT at ${fdtaddr}=Ox%lx\n", fdt_addr);
 		}
 #endif
+	} else if (genimg_get_format(buf) == IMAGE_FORMAT_LITE) {
+		struct lite_img_hdr *hdr = buf;
+		u32			fdt_size;
+
+		if (lite_image_get_dtb((ulong)hdr, &fdt_addr, &fdt_size)) {
+			fdt_blob = (char *)map_sysmem(fdt_addr, 0);
+			if (fdt_check_header(fdt_blob))
+				goto no_fdt;
+
+			debug("## Using FDT in Lite image dtb area\n");
+		}
 	} else {
 		debug("## No Flattened Device Tree\n");
 		goto no_fdt;
